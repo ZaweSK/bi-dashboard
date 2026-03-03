@@ -29,7 +29,7 @@ export interface SheetMeta {
  * Fetch metadata about a spreadsheet and all its tabs.
  */
 export async function getSpreadsheetInfo(
-  spreadsheetId: string
+  spreadsheetId: string,
 ): Promise<{ title: string; sheets: SheetMeta[] }> {
   const response = await getClient().spreadsheets.get({ spreadsheetId });
 
@@ -52,7 +52,7 @@ export async function getSpreadsheetInfo(
  */
 export async function getSheetData(
   spreadsheetId: string,
-  range: string
+  range: string,
 ): Promise<string[][]> {
   const response = await getClient().spreadsheets.values.get({
     spreadsheetId,
@@ -69,6 +69,6 @@ export function rowsToObjects(rows: string[][]): Record<string, string>[] {
   if (rows.length < 2) return [];
   const [headers, ...dataRows] = rows;
   return dataRows.map((row) =>
-    Object.fromEntries(headers.map((h, i) => [h, row[i] ?? ""]))
+    Object.fromEntries(headers.map((h, i) => [h, row[i] ?? ""])),
   );
 }
