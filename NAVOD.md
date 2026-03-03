@@ -18,4 +18,4 @@ ked upravim nieco, napr novu featuru, tak si to ulozim command s, ked mam viac z
 
 nezabudni davat novy chat po chvilke
 
-ked spravim viac zmien, tak idem do tej ikonky gulicky pospajane ciarkou, napisem ake zmeny sa udiali hore do toho textoveho pola a dam commit
+ked spravim viac zmien, tak idem do tej ikonky gulicky pospajane ciarkou, napisem ake zmeny sa udiali hore do toho textoveho pola a dam commit + potom sync changes
