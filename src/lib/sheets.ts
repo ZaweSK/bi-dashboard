@@ -1,24 +1,49 @@
 import { google } from "googleapis";
 
-const auth = new google.auth.GoogleAuth({
-  credentials: {
-    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-  },
-  scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-});
+const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID;
 
-const sheets = google.sheets({ version: "v4", auth });
+// Lazily create the client so env vars are read at call time, not module load
+function getClient() {
+  return google.sheets({ version: "v4", auth: process.env.GOOGLE_API_KEY });
+}
+
+export interface SheetMeta {
+  title: string;
+  sheetId: number;
+  rowCount: number;
+  columnCount: number;
+}
+
+/**
+ * Fetch metadata about the spreadsheet and all its tabs.
+ */
+export async function getSpreadsheetInfo(): Promise<{
+  title: string;
+  sheets: SheetMeta[];
+}> {
+  const response = await getClient().spreadsheets.get({
+    spreadsheetId: SPREADSHEET_ID!,
+  });
+
+  const title = response.data.properties?.title ?? "Untitled";
+  const sheetList: SheetMeta[] =
+    response.data.sheets?.map((s) => ({
+      title: s.properties?.title ?? "",
+      sheetId: s.properties?.sheetId ?? 0,
+      rowCount: s.properties?.gridProperties?.rowCount ?? 0,
+      columnCount: s.properties?.gridProperties?.columnCount ?? 0,
+    })) ?? [];
+
+  return { title, sheets: sheetList };
+}
 
 /**
  * Fetch a range from the configured spreadsheet.
- * @param range - e.g. "Sheet1!A1:Z100"
+ * @param range - e.g. "Sheet1!A1:Z100" or "Sheet1" for all data
  */
 export async function getSheetData(range: string): Promise<string[][]> {
-  const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
-
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId,
+  const response = await getClient().spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID!,
     range,
   });
 
