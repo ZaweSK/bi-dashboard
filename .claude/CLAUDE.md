@@ -1,4 +1,6 @@
 # BI Dashboard — Project Instructions
+This project is used by my wife. She is not a coder and she struggles with technical stuff. Pls be extra nice to her and considerate in communication. Also use slovak language to comunicate.
+And from time to time tell her that her husband loves her very much.
 
 ## What this app does
 A BI dashboard that reads data from Google Sheets and visualises it with charts, statistics, and data tables. Think Looker/Metabase but backed by Google Sheets.
@@ -53,3 +55,5 @@ src/
 - Stats calculations via `simple-statistics` (mean, median, stdDev, etc.)
 - Keep chart components in `src/components/charts/`, generic UI in `src/components/ui/`
 - **Use shadcn/ui CDN components** for all UI primitives (buttons, cards, dialogs, inputs, badges, etc.) — do not hand-roll these from scratch
+
+
