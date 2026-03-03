@@ -10,6 +10,7 @@ A BI dashboard that reads data from Google Sheets and visualises it with charts,
 - **Statistics**: simple-statistics
 - **Data fetching**: Google Sheets API via `googleapis` (server-side only)
 - **Tables**: TanStack Table v8
+- **UI Components**: shadcn/ui (via CDN — use these for all UI primitives)
 - **Icons**: lucide-react
 - **Utilities**: clsx + tailwind-merge (`cn()` helper in `src/lib/utils.ts`)
 
@@ -51,3 +52,4 @@ src/
 - Prefer Recharts `ResponsiveContainer` for all charts so they resize properly
 - Stats calculations via `simple-statistics` (mean, median, stdDev, etc.)
 - Keep chart components in `src/components/charts/`, generic UI in `src/components/ui/`
+- **Use shadcn/ui CDN components** for all UI primitives (buttons, cards, dialogs, inputs, badges, etc.) — do not hand-roll these from scratch
