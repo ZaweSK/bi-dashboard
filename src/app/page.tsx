@@ -1,42 +1,70 @@
-import { getSpreadsheetInfo, SheetMeta } from "@/lib/sheets";
+import {
+  getSpreadsheetInfo,
+  resolveSpreadsheetId,
+  SPREADSHEET_IDS,
+  SheetMeta,
+} from "@/lib/sheets";
+import { SpreadsheetTabs } from "@/components/ui/SpreadsheetTabs";
 import { TableIcon } from "lucide-react";
 
 export const revalidate = 60;
 
-export default async function Home() {
-  let title = "";
+interface HomeProps {
+  searchParams: Promise<{ tab?: string }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const { tab } = await searchParams;
+  const activeTab = Math.max(
+    0,
+    Math.min(
+      SPREADSHEET_IDS.length - 1,
+      parseInt(tab ?? "0", 10) || 0
+    )
+  );
+
+  // Fetch all tab titles in parallel for the tab bar
+  const tabTitles = await Promise.all(
+    SPREADSHEET_IDS.map(async (id, i) => {
+      try {
+        const info = await getSpreadsheetInfo(id);
+        return { index: i, title: info.title };
+      } catch {
+        return { index: i, title: `Spreadsheet ${i + 1}` };
+      }
+    })
+  );
+
+  // Fetch the active spreadsheet's sheet list
   let sheetList: SheetMeta[] = [];
   let error = "";
-
   try {
-    const info = await getSpreadsheetInfo();
-    title = info.title;
+    const spreadsheetId = resolveSpreadsheetId(activeTab);
+    const info = await getSpreadsheetInfo(spreadsheetId);
     sheetList = info.sheets;
   } catch (err) {
-    error = err instanceof Error ? err.message : "Failed to connect to Google Sheets";
+    error =
+      err instanceof Error ? err.message : "Failed to connect to Google Sheets";
   }
 
   return (
     <main className="min-h-screen p-8 max-w-5xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-1">BI Dashboard</h1>
-        {title && (
-          <p className="text-gray-500 text-sm">
-            Connected to:{" "}
-            <span className="font-medium text-gray-700">{title}</span>
-          </p>
-        )}
+        <p className="text-gray-500 text-sm">
+          Showing{" "}
+          <span className="font-medium text-gray-700">
+            {tabTitles[activeTab]?.title}
+          </span>
+        </p>
       </div>
+
+      <SpreadsheetTabs tabs={tabTitles} activeTab={activeTab} />
 
       {error ? (
         <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">
           <p className="font-semibold mb-1">Connection error</p>
           <p className="text-sm font-mono">{error}</p>
-          <p className="text-sm mt-3 text-red-600">
-            Make sure <code className="bg-red-100 px-1 rounded">GOOGLE_API_KEY</code> and{" "}
-            <code className="bg-red-100 px-1 rounded">GOOGLE_SPREADSHEET_ID</code> are set in{" "}
-            <code className="bg-red-100 px-1 rounded">.env.local</code>.
-          </p>
         </div>
       ) : (
         <>
@@ -45,7 +73,7 @@ export default async function Home() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {sheetList.map((sheet) => (
-              <SheetCard key={sheet.sheetId} sheet={sheet} />
+              <SheetCard key={sheet.sheetId} sheet={sheet} activeTab={activeTab} />
             ))}
           </div>
         </>
@@ -54,7 +82,7 @@ export default async function Home() {
   );
 }
 
-function SheetCard({ sheet }: { sheet: SheetMeta }) {
+function SheetCard({ sheet, activeTab }: { sheet: SheetMeta; activeTab: number }) {
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-3">
@@ -71,7 +99,7 @@ function SheetCard({ sheet }: { sheet: SheetMeta }) {
       </div>
       <div className="mt-4 pt-3 border-t border-gray-100 flex gap-3 text-xs text-gray-400">
         <a
-          href={`/api/sheets/${encodeURIComponent(sheet.title)}`}
+          href={`/api/sheets/${encodeURIComponent(sheet.title)}?spreadsheet=${activeTab}`}
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-blue-500 transition-colors"
