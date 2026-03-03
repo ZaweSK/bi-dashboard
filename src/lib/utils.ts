@@ -1,20 +1,20 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
-/** Parse a string to number, returning null if not valid */
-export function toNumber(value: string): number | null {
-  const n = parseFloat(value.replace(/,/g, ""));
-  return isNaN(n) ? null : n;
+export function toNumber(value: unknown): number {
+  if (typeof value === "number") return value
+  if (typeof value === "string") {
+    const cleaned = value.replace(/,/g, "").trim()
+    const n = Number(cleaned)
+    return isNaN(n) ? 0 : n
+  }
+  return 0
 }
 
-/** Format a number with commas */
-export function formatNumber(value: number, decimals = 2): string {
-  return value.toLocaleString("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
+  return new Intl.NumberFormat(undefined, options).format(value)
 }
