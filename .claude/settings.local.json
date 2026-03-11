@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(code --version)",
+      "Read(//Users/peter/.vscode/extensions/**)"
+    ]
+  }
+}

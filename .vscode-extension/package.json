@@ -1,0 +1,37 @@
+{
+  "name": "tool-helper",
+  "displayName": "Pomocník",
+  "description": "Jednoduchý panel s tlačidlami pre ovládanie projektu",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "tool-helper",
+          "title": "Pomocník",
+          "icon": "$(heart)"
+        }
+      ]
+    },
+    "views": {
+      "tool-helper": [
+        {
+          "type": "webview",
+          "id": "toolHelper.panelView",
+          "name": "Pomocník"
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}

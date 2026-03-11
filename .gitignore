@@ -28,3 +28,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vscode extension build
+.vscode-extension/out/
+.vscode-extension/node_modules/
